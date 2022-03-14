@@ -46,14 +46,16 @@ class Reprompt(SkillInvokeResponse):
         name = f"{request.context.intent}{'_' + entity if entity else ''}_reprompt_count"
 
         try:
-            request.session.attributes[name] = int(request.session.attributes.get(name, 0)) + 1
-        except ValueError:
-            request.session.attributes[name] = 1
+            reprompt_count = int(request.session.attributes[name]) + 1
+        except (KeyError, ValueError):
+            reprompt_count = 1
 
-        if request.session.attributes[name] > max_reprompts > 0:
+        if reprompt_count > max_reprompts > 0:
             del request.session.attributes[name]
             values['text'] = values['stop_text']
             values['type'] = ResponseType.TELL
+        else:
+            request.session.attributes[name] = reprompt_count
 
         return max_reprompts
 
