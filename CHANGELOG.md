@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Bugfixes
+
+- Returning text from nl_build with fullstop in the end.
+
 ### Features
 
 - Add data values in the response of version 0
