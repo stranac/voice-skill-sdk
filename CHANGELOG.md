@@ -2,7 +2,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 1.2.1 - 2022-04-07
 
 ### Bugfixes
 
