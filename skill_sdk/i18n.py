@@ -205,13 +205,13 @@ class Translations(support.Translations):
     def nl_build(self, header: Text, elements: List[Text]) -> Text:
         """
         Build list in natural language:
-            (header, [items, item2, item3]) -> 'Header: item1, item2 and item3.'
+            (header, [items, item2, item3]) -> 'Header: item1, item2, and item3.'
 
         :param header:      list header
         :param elements:    list elements
         :return:
         """
-        return Message(": ").join((header, self.format_list(elements)))
+        return f'{Message(": ").join((header, self.format_list(elements)))}.'
 
     def format_datetime(self, datetime=None, format="medium", tzinfo=None) -> Text:
         """Format datetime according to the locale"""

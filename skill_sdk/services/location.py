@@ -37,7 +37,7 @@ class AddressComponents(CamelModel):
     """Address components: city and postal code"""
 
     city: Text
-    postal_code: Text
+    postal_code: Optional[Text]
 
 
 class Address(CamelModel):
@@ -51,7 +51,7 @@ class Location(CamelModel):
     """Location consists of an address and time-zone"""
 
     address: Address
-    timezone: Text = "Europe/Berlin"
+    time_zone: Text = "Europe/Berlin"
 
 
 class FullLocation(GeoLocation, Location):

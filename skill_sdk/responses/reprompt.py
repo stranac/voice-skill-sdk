@@ -10,7 +10,8 @@
 
 """Re-prompt response"""
 
-from typing import Optional, Text
+from typing import Optional, Text, Dict, Any
+from pydantic import validator
 
 from skill_sdk.intents import request
 
@@ -32,11 +33,33 @@ class Reprompt(SkillInvokeResponse):
     # stop text will be sent if number of re-prompts is higher than maximum number
     stop_text: Optional[Text]
 
+    # entity name if re-prompt is used for intent/entity
+    entity: Optional[Text]
+
     # maximum number of re-prompts
     max_reprompts: int
 
-    # entity name if re-prompt is used for intent/entity
-    entity: Optional[Text]
+    @validator("max_reprompts")
+    def check_max_reprompts(cls, max_reprompts, values):
+        # Name of the counter formatted as INTENT_ENTITY_reprompt_count
+        entity = values.get("entity")
+        name = (
+            f"{request.context.intent}{'_' + entity if entity else ''}_reprompt_count"
+        )
+
+        try:
+            reprompt_count = int(request.session.attributes[name]) + 1
+        except (KeyError, ValueError):
+            reprompt_count = 1
+
+        if reprompt_count > max_reprompts > 0:
+            del request.session.attributes[name]
+            values["text"] = values["stop_text"]
+            values["type"] = ResponseType.TELL
+        else:
+            request.session.attributes[name] = reprompt_count
+
+        return max_reprompts
 
     def __init__(
         self,
@@ -54,26 +77,5 @@ class Reprompt(SkillInvokeResponse):
             **kwargs,
         )
 
-    def dict(self):
-        """
-        Get/set the number of re-prompts in session
-        """
-
-        # Name of the counter formatted as INTENT_ENTITY_reprompt_count
-        name = f"{request.context.intent}{'_' + self.entity if self.entity else ''}_reprompt_count"
-
-        try:
-            reprompt_count = int(request.session[name]) + 1
-        except (KeyError, ValueError):
-            reprompt_count = 1
-
-        if reprompt_count > self.max_reprompts > 0:
-            del request.session[name]
-            response = self.copy(
-                update=dict(text=self.stop_text, type=ResponseType.TELL)
-            )
-        else:
-            request.session[name] = reprompt_count
-            response = super()
-
-        return response.dict()
+    def dict(self, *args, **kwargs) -> Dict[Text, Any]:
+        return super(Reprompt, self).dict()

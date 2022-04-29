@@ -2,6 +2,42 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 1.2.1 - 2022-04-07
+
+### Bugfixes
+
+- Returning text from nl_build with fullstop in the end.
+
+### Features
+
+- Add data values in the response of version 0
+
+## 1.2.0 - 2022-04-05
+
+### Features
+
+- Enhance User-Agent header to include kubernetes POD name when it comes to SVH cluster requests
+- Adding new`ReferenceType` called `MEDIA_CONTENT_END` 
+
+## 1.1.9 - 2022-03-31
+
+### Bugfixes
+
+- Making variable postal_code Optional of class AddressComponents due to some cities from location service has no postal code
+
+## 1.1.8 - 2022-03-17
+
+### Bugfixes
+
+-  FIX Rename Locations timezone to time_zone 
+
+## 1.1.7 - 2022-03-15
+
+### Bugfixes
+
+-  Fix error when returning an instance of Reprompt from an intent handler. 
+
+
 ## 1.1.6 - 2022-02-09
 
 ### Features
