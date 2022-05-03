@@ -30,7 +30,7 @@ from pydantic.utils import lenient_issubclass
 from skill_sdk.utils.util import run_in_executor
 from skill_sdk.intents import entities
 from skill_sdk.intents import Context, Request, Session, RequestContextVar
-from skill_sdk.responses import Response, _enrich
+from skill_sdk.responses import Response, _enrich, ErrorResponse
 
 from functools import wraps, reduce, partial
 
@@ -53,7 +53,7 @@ class EntityValueException(Exception):
         super().__init__(*args)
 
 
-async def invoke(handler: AnyFunc, request: Request) -> Response:
+async def invoke(handler: AnyFunc, request: Request) -> Union[Response, ErrorResponse]:
     """
     Invoke intent handler:
 
@@ -77,10 +77,11 @@ async def invoke(handler: AnyFunc, request: Request) -> Response:
         else:
             response = await run_in_executor(handler, request)
 
-        result = _enrich(response)
+        if not isinstance(response, ErrorResponse):
+            response = _enrich(response)
 
-        logger.debug("Intent call result: %s", repr(result))
-        return result
+        logger.debug("Intent call result: %s", repr(response))
+        return response
 
 
 def _is_subtype(cls: Any, class_or_tuple: Any) -> bool:

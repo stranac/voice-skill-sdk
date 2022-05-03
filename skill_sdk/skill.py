@@ -20,7 +20,7 @@ from fastapi import FastAPI
 from skill_sdk import i18n
 from skill_sdk.utils import util
 from skill_sdk.intents import handlers, invoke
-from skill_sdk.responses import Response
+from skill_sdk.responses import Response, ErrorResponse
 
 logger = logging.getLogger(__name__)
 
@@ -196,7 +196,7 @@ class Skill(FastAPI):
         translation: i18n.Translations = None,
         session: Union[util.CamelModel, Dict[Text, Text]] = None,
         **kwargs,
-    ) -> Response:
+    ) -> Union[Response, ErrorResponse]:
         """
         Test an intent implementation
 
@@ -314,7 +314,7 @@ def test_intent(
     translation: i18n.Translations = None,
     session: Union[util.CamelModel, Dict[Text, Text]] = None,
     **kwargs,
-) -> Response:
+) -> Union[Response, ErrorResponse]:
     """
     Backward compatible test helper
 

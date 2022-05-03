@@ -12,6 +12,18 @@ from skill_sdk.responses import (
     ErrorCode,
     ErrorResponse,
 )
+from skill_sdk import skill
+
+
+async def test_return_error_response_from_intent_handler():
+    @skill.intent_handler("ERROR")
+    def return_error_response():
+        return ErrorResponse(code=ErrorCode.INTERNAL_ERROR, text="internal error")
+
+    response = skill.test_intent("ERROR")
+    assert isinstance(response, ErrorResponse)
+    assert response.code == 999
+    assert response.text == "internal error"
 
 
 def test_init():
