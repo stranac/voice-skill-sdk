@@ -263,18 +263,26 @@ def intent_handler(
                 )
 
             @wraps(inner)
-            async def wrapper(request: Request = None, *args, **kwargs) -> Response:
+            async def wrapper(*args, **kwargs) -> Response:
                 """Entry point to async intent handler"""
 
-                return await target(*(request, *args), **kwargs)
+                # if the first arg is not a request, set request to None
+                if not (args and isinstance(args[0], Request)):
+                    args = (None, *args)
+
+                return await target(*args, **kwargs)
 
         else:
 
             @wraps(inner)
-            def wrapper(request: Request = None, *args, **kwargs) -> Response:
+            def wrapper(*args, **kwargs) -> Response:
                 """Entry point to sync handler"""
 
-                return target(*(request, *args), **kwargs)
+                # if the first arg is not a request, set request to None
+                if not (args and isinstance(args[0], Request)):
+                    args = (None, *args)
+
+                return target(*args, **kwargs)
 
         setattr(wrapper, "__intent_handler__", True)
         return wrapper
@@ -324,7 +332,7 @@ def _parse_and_call(
         return _log_and_call(
             "Direct call",
             func,
-            *args if request is None else (request, *args),
+            *args,
             **kwargs,
         )
 

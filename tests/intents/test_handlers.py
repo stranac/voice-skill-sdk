@@ -13,7 +13,7 @@ import inspect
 import unittest.mock
 import datetime
 from contextvars import ContextVar
-from typing import List
+from typing import List, Optional
 import pytest
 
 from skill_sdk import Request, Response
@@ -227,6 +227,17 @@ class TestHandlerDecorator:
                 "1001-12-31",
             ],
         )
+
+    @pytest.mark.parametrize("args", [(0, 1, 2, 3), (None, 1, 2, 3)])
+    def test_handler_direct_call_positional(self, args):
+        """Test for a bug where the first argument gets dropped if it's None"""
+
+        @intent_handler
+        def decorated_test(*args: Optional[int]):
+            return args
+
+        result = decorated_test(*args)
+        assert result == args
 
     @mock_datetime_now(
         datetime.datetime(year=2100, month=12, day=31, hour=15), datetime
